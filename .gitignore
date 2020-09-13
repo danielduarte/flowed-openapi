@@ -1,0 +1,16 @@
+# IDE files
+/.idea/
+
+# Node.js files
+/node_modules/
+
+# Build generated files
+/dist/
+/tsconfig.tsbuildinfo
+
+# Test generated files
+/.nyc_output
+/coverage/
+
+# Private files
+/.coveralls.yml
