@@ -1,14 +1,35 @@
 import axios from 'axios';
 
+interface StrMap {
+  [name: string]: string;
+}
+
 export class OpenApi {
   public async exec(params: any, context: any, task: any, debug: any) {
     const options = params.options || {};
-    const url = params.serverUrl.replace(/\/$/, '') + params.path;
+
+    // Prepare request URL
+    const urlTemplate = params.serverUrl.replace(/\/$/, '') + params.path;
+    const url = OpenApi.replaceParams(urlTemplate, params.pathParams);
+
+    // Serialize cookies
+    // @todo add support for cookie options. See package 'cookie'.
+    const cookiesStr = params.cookies && Object.entries(params.cookies as string[]).reduce((acc, [name, value]) => {
+      acc += `${name}=${encodeURIComponent(value)}; `;
+      return acc;
+    }, '').slice(0, -2) || '';
+
+    const headers = params.headers || {};
+    if (cookiesStr.length > 0) {
+      headers.Cookie = cookiesStr;
+    }
+
+    // AGREGAR LOS NUEVOS PARAMS A LA DEFINICION DE PARAMS DE ENTRADA en flowed-modeler
 
     const requestInfo = {
       url,
       method: params.method,
-      headers: params.headers || {},
+      headers,
       params: params.query || {},
       data: params.body,
 
@@ -39,6 +60,15 @@ export class OpenApi {
     }
   }
 
+  public static replaceParams(template: string, params: StrMap) {
+    let result = template;
+    for (const [name, value] of Object.entries(params)) {
+      result = result.replace(new RegExp(`\{${name}\}`, 'g'), value);
+    }
+
+    return result;
+  }
+
   public static flowedSpec: object = {};
 }
 
@@ -54,10 +84,12 @@ OpenApi.flowedSpec = {
   params: {
     serverUrl: FlowedTypes.str,
     path: FlowedTypes.str,
+    pathParams: FlowedTypes.obj,
     method: FlowedTypes.str,
     query: FlowedTypes.obj,
     body: FlowedTypes.obj,
     headers: FlowedTypes.obj,
+    cookies: FlowedTypes.obj,
     options: FlowedTypes.obj,
   },
   results: {
