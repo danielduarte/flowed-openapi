@@ -17,10 +17,15 @@ export class OpenApi {
 
     // Serialize cookies
     // @todo add support for cookie options. See package 'cookie'.
-    const cookiesStr = params.cookies && Object.entries(params.cookies as string[]).reduce((acc, [name, value]) => {
-      acc += `${name}=${encodeURIComponent(value)}; `;
-      return acc;
-    }, '').slice(0, -2) || '';
+    const cookiesStr =
+      (params.cookies &&
+        Object.entries(params.cookies as string[])
+          .reduce((acc, [name, value]) => {
+            acc += `${name}=${encodeURIComponent(value)}; `;
+            return acc;
+          }, '')
+          .slice(0, -2)) ||
+      '';
 
     const headers = params.headers || {};
     if (cookiesStr.length > 0) {
