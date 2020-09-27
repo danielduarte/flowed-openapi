@@ -8,6 +8,9 @@ export class OpenApi {
   public async exec(params: any, context: any, task: any, debug: any) {
     const options = params.options || {};
 
+    params.serverUrl = params.serverUrl || 'http://localhost:3000';
+    params.path = params.path || '/';
+
     // Prepare request URL
     const urlTemplate = params.serverUrl.replace(/\/$/, '') + params.path;
     const url = OpenApi.replaceParams(urlTemplate, params.pathParams);
@@ -23,8 +26,6 @@ export class OpenApi {
     if (cookiesStr.length > 0) {
       headers.Cookie = cookiesStr;
     }
-
-    // AGREGAR LOS NUEVOS PARAMS A LA DEFINICION DE PARAMS DE ENTRADA en flowed-modeler
 
     const requestInfo = {
       url,
@@ -62,7 +63,7 @@ export class OpenApi {
 
   public static replaceParams(template: string, params: StrMap) {
     let result = template;
-    for (const [name, value] of Object.entries(params)) {
+    for (const [name, value] of Object.entries(params || {})) {
       result = result.replace(new RegExp(`\{${name}\}`, 'g'), value);
     }
 
@@ -80,7 +81,7 @@ const FlowedTypes = {
 };
 
 OpenApi.flowedSpec = {
-  version: '0.1.0',
+  version: '0.1.3',
   params: {
     serverUrl: FlowedTypes.str,
     path: FlowedTypes.str,
