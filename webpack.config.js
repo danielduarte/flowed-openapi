@@ -8,7 +8,9 @@ module.exports = {
     path: path.resolve(__dirname, 'web'),
     library: "FlowedOpenApi",
   },
-  node: {
-    fs: 'empty'
+  resolve: {
+    fallback: {
+      fs: false,
+    },
   }
 };

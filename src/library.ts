@@ -62,7 +62,7 @@ export class OpenApi {
         body: response.data,
       };
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error((err as Error).message);
     }
   }
 
